@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NBA ARVI Win Predictor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+    label { display: block; margin-top: 20px; font-weight: bold; }
+    input[type="file"] { margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    .success { color: green; margin-top: 20px; }
+    .error { color: red; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🏀 NBA Win Prediction Using ARVI</h1>
+
+  <form id="uploadForm">
+    <label for="player-stats">Upload Player Stats CSV:</label>
+    <input type="file" id="player-stats" name="player_stats" accept=".csv" required>
+
+    <label for="team-wins">Upload Team Wins CSV:</label>
+    <input type="file" id="team-wins" name="team_wins" accept=".csv" required>
+
+    <button type="submit">Run ARVI Model</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/run-arvi-model', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          message.textContent = '✅ Model run successfully! Check your output.';
+          message.className = 'success';
+        } else {
+          message.textContent = '❌ Error: ' + result.message;
+          message.className = 'error';
+        }
+      } catch (err) {
+        message.textContent = '❌ Error submitting files.';
+        message.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>
